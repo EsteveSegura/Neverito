@@ -6,6 +6,9 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 //mongooseConnection
+mongoose.connect(process.env.DATABASESTRING || 'mongodb://localhost/neverito', { useNewUrlParser: true, useUnifiedTopology: true })
+     .then((db) => console.log('Connected to database'))
+     .catch((err) => console.log('Fail conecting to database'))
 
 //ApiRoute
 const api = require('./routes/api');
@@ -22,6 +25,6 @@ app.use(cors());
 app.use('/api', api)
 
 //Listen
-app.listen(process.env.PORT || 3000, () =>{
-    console.log(`App running on ${process.env.PORT || 3000}`)
+app.listen(process.env.PORT || 1337, () =>{
+    console.log(`App running on ${process.env.PORT || 1337}`)
 })

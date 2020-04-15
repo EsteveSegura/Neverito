@@ -1,4 +1,4 @@
-class Article {
+class InventoryArticle {
     constructor(name,brand,product_weight,quantity){
         this.name = name;
         this.brand = brand;
@@ -18,4 +18,4 @@ class Article {
 
 }
 
-module.exports = Article
+module.exports = InventoryArticle
