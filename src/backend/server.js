@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(session({
-    secret: process.env.SESSION_KEY || 'supersecret',
+    secret: process.env.SESSION_KEY || 'supersecret1',
     resave: true,
     saveUninitialized: true,
 }))
