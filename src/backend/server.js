@@ -4,14 +4,15 @@ const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
-//mongooseConnection
+const session = require('express-session')
+//mongooseConnection    
 mongoose.connect(process.env.DATABASESTRING || 'mongodb://localhost/neverito', { useNewUrlParser: true, useUnifiedTopology: true })
-     .then((db) => console.log('Connected to database'))
-     .catch((err) => console.log('Fail conecting to database'))
+    .then((db) => console.log('Connected to database'))
+    .catch((err) => console.log('Fail conecting to database'))
 
-//ApiRoute
-const api = require('./routes/api');
+    
+    //ApiRoute
+    const api = require('./routes/api');
 
 //Init
 const app = express();
@@ -20,6 +21,15 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(session({
+    secret: process.env.SESSION_KEY || 'supersecret',
+    resave: true,
+    saveUninitialized: true,
+}))
+
+//sets
+app.set('trust proxy', 1) //Needed by cookies
+
 
 //API
 app.use('/api', api)
