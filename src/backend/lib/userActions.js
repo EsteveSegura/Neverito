@@ -3,16 +3,26 @@ const User = require('../models/user');
 
 async function createNewUser(data) {
      return new Promise(async (resolve, reject) => {
-          let newUser = new User({
-               email: data.email,
-               password: data.password
-          });
-
-          await newUser.save((err) => {
-               if (err) {
+          User.findOne({email : data.email}, async(err, user) => {
+               if(err){
                     reject(err);
                }
-               resolve(true)
+
+               if(user){
+                    resolve({'message' : 'User already exists. Not created'});
+               }else{
+                    let newUser = new User({
+                         email: data.email,
+                         password: data.password
+                    });
+          
+                    await newUser.save((err) => {
+                         if (err) {
+                              reject(err);
+                         }
+                         resolve({'message' : 'User created.'})
+                    });
+               }
           });
      });
 }
@@ -27,6 +37,7 @@ function checkUserPassword(data) {
           });
      });
 }
+
 
 
 /*function getClient(idClient){

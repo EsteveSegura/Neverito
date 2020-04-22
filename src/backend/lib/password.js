@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 
 function cryptPassword(password){
     return new Promise((resolve,reject) => {
-        console.log(password)
         bcrypt.genSalt(parseInt(process.env.SALT_ROUND), function(err, salt) {
             bcrypt.hash(password, salt, function(err, hash) {
                 if(err){

@@ -18,28 +18,33 @@ router.get('/', (req,res) => {
 
 router.post('/user/register', async(req,res) => {
     //check if mail is mail, and password
-    let cryptPassword = await passwordHash.cryptPassword(req.body.password)
-    let data = new user(req.body.email, cryptPassword)
+    let cryptPassword = await passwordHash.cryptPassword(req.body.password);
+    let data = new user(req.body.email, cryptPassword);
     let userInsertion = await userActions.createNewUser(data.getObject());
-    res.json({'insertion' : data.getObject(), 'sucessful' : userInsertion});
+    res.json({'insertion' : data.getObject(), userInsertion});
 });
 
 router.post('/user/login', async(req,res) => {
-    let data = new user(req.body.email, req.body.password)
-    let userCheck = await userActions.checkUserPassword(data)
+    let data = new user(req.body.email, req.body.password);
+    try{
+        let userCheck = await userActions.checkUserPassword(data);
     
-    let checkPasswordHash = await passwordHash.comparePassword(req.body.password,userCheck.password)
-    console.log(checkPasswordHash)
-    if(checkPasswordHash){
-        jwt.sign({'user' : data.getObject()}, process.env.API_KEY, (err, token) => {
-            req.session.token = token;
-            res.json({token});
-        });
+        let checkPasswordHash = await passwordHash.comparePassword(req.body.password,userCheck.password);
+        if(checkPasswordHash){
+            jwt.sign({'user' : data.getObject()}, process.env.API_KEY, (err, token) => {
+                req.session.token = token;
+                res.json({token});
+            });
+        }else{
+            res.json({'message' : 'Wrong data.'});
+        }
+    }catch(error){
+        res.json({'message' : 'Something Wrong.'})
     }
 });
 
 router.get('/user/data', secure.verifyToken, (req,res) => {
-    req.token = req.session.token
+    req.token = req.session.token;
     jwt.verify(req.token, process.env.API_KEY, (err,authData) => {
         if(err){
             res.sendStatus(403);
