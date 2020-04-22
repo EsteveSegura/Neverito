@@ -4,26 +4,42 @@ const router = express.Router();
 
 const food = require('../utils/food.js')
 const secure = require('../lib/secure');
-const inventoryArticle = require('../classes/inventoryArticle.js');
+
+const inventoryArticle = require('../classes/inventoryArticleClass.js');
+const user = require('../classes/userClass.js');
+
+const userActions = require('../lib/userActions');
+
+const passwordHash = require('../lib/password');
 
 router.get('/', (req,res) => {
     res.json({'message' : 'Server running OK'});
 });
 
-router.post('/user/login', (req,res,next) => {
-    const userTemplate = {
-        'email' : req.body.email,
-        'password' : req.body.password
-    }
-
-    jwt.sign({'user' : userTemplate}, process.env.API_KEY, (err, token) => {
-        res.json({token});
-        req.session.authKey = token;
-        next();
-    });
+router.post('/user/register', async(req,res) => {
+    //check if mail is mail, and password
+    let cryptPassword = await passwordHash.cryptPassword(req.body.password)
+    let data = new user(req.body.email, cryptPassword)
+    let userInsertion = await userActions.createNewUser(data.getObject());
+    res.json({'insertion' : data.getObject(), 'sucessful' : userInsertion});
 });
 
-router.get('/user/data', secure.verifyToken, (req,res,next) => {
+router.post('/user/login', async(req,res) => {
+    let data = new user(req.body.email, req.body.password)
+    let userCheck = await userActions.checkUserPassword(data)
+    
+    let checkPasswordHash = await passwordHash.comparePassword(req.body.password,userCheck.password)
+    console.log(checkPasswordHash)
+    if(checkPasswordHash){
+        jwt.sign({'user' : data.getObject()}, process.env.API_KEY, (err, token) => {
+            req.session.token = token;
+            res.json({token});
+        });
+    }
+});
+
+router.get('/user/data', secure.verifyToken, (req,res) => {
+    req.token = req.session.token
     jwt.verify(req.token, process.env.API_KEY, (err,authData) => {
         if(err){
             res.sendStatus(403);
@@ -41,7 +57,5 @@ router.post('/add', async(req,res) => {
         req.body.quantity)
     res.json(data.getObject());
 });
-
-
 
 module.exports = router

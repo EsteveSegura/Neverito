@@ -14,8 +14,6 @@ class InventoryArticle {
             'quantity' : this.quantity
         }
     }
-
-
 }
 
-module.exports = InventoryArticle
+module.exports = InventoryArticle;

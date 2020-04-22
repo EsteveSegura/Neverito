@@ -25,16 +25,16 @@ app.use(session({
     secret: process.env.SESSION_KEY || 'supersecret1',
     resave: true,
     saveUninitialized: true,
-}))
+    cookie: {secure: false, maxAge: 6000000000}
+}));
 
 //sets
-app.set('trust proxy', 1) //Needed by cookies
-
+app.set('trust proxy', 1); //Needed by cookies
 
 //API
-app.use('/api', api)
+app.use('/api', api);
 
 //Listen
 app.listen(process.env.PORT || 1337, () =>{
-    console.log(`App running on ${process.env.PORT || 1337}`)
-})
+    console.log(`App running on ${process.env.PORT || 1337}`);
+});
