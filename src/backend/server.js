@@ -11,8 +11,8 @@ mongoose.connect(process.env.DATABASESTRING || 'mongodb://localhost/neverito', {
     .catch((err) => console.log('Fail conecting to database'))
 
     
-    //ApiRoute
-    const api = require('./routes/api');
+//ApiRoute
+const api = require('./routes/api');
 
 //Init
 const app = express();
@@ -29,7 +29,7 @@ app.use(session({
 }));
 
 //sets
-app.set('trust proxy', 1); //Needed by cookies
+app.set('trust proxy', 1);
 
 //API
 app.use('/api', api);
