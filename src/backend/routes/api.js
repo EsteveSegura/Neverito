@@ -33,7 +33,7 @@ router.post('/user/login', async(req,res) => {
         if(checkPasswordHash){
             jwt.sign({'user' : data.getObject()}, process.env.API_KEY, (err, token) => {
                 req.session.token = token;
-                res.json({token});
+                res.redirect('api/user/data')
             });
         }else{
             res.json({'message' : 'Wrong data.'});
